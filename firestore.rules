@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() { return request.auth != null; }
+    function isOwner(uid) { return request.auth.uid == uid; }
+    function isValidString(value, maxLen) { return value is string && value.size() > 0 && value.size() <= maxLen; }
+    function isNonNegativeNumber(value) { return value is number && value >= 0; }
+    function fieldUnchanged(field) { return !(field in request.resource.data) || request.resource.data[field] == resource.data[field]; }
+    function isValidUserData(data) {
+      return data.keys().hasAll(['uid','username','totalActivities','totalDistance','totalDuration','isPublic'])
+        && isValidString(data.username, 30)
+        && data.username.matches('^[a-z0-9_]+$')
+        && data.isPublic is bool
+        && isNonNegativeNumber(data.totalActivities)
+        && isNonNegativeNumber(data.totalDistance)
+        && isNonNegativeNumber(data.totalDuration)
+        && (!('bio' in data) || data.bio is string && data.bio.size() <= 160)
+        && (!('displayName' in data) || data.displayName is string && data.displayName.size() <= 50);
+    }
+    function isValidActivityData(data) {
+      return data.keys().hasAll(['userId','type','status','title','startedAt','duration','distance','pace','route','splits','isPublic'])
+        && data.userId is string
+        && data.type in ['run','walk','trail','treadmill']
+        && data.status in ['in_progress','completed','discarded']
+        && isValidString(data.title, 80)
+        && isNonNegativeNumber(data.duration)
+        && isNonNegativeNumber(data.distance)
+        && isNonNegativeNumber(data.pace)
+        && data.isPublic is bool
+        && data.route is list && data.route.size() <= 50000
+        && data.splits is list && data.splits.size() <= 200
+        && (!('notes' in data) || data.notes is string && data.notes.size() <= 500)
+        && (!('calories' in data) || isNonNegativeNumber(data.calories))
+        && (!('elevationGain' in data) || isNonNegativeNumber(data.elevationGain));
+    }
+    function isActivityOwner() { return isAuthenticated() && resource.data.userId == request.auth.uid; }
+    function isPublicActivity() { return resource.data.isPublic == true; }
+
+    match /users/{uid} {
+      allow read: if isAuthenticated() && (isOwner(uid) || resource.data.isPublic == true);
+      allow create: if isAuthenticated() && isOwner(uid) && isValidUserData(request.resource.data) && request.resource.data.uid == uid;
+      allow update: if isAuthenticated() && isOwner(uid) && isValidUserData(request.resource.data) && fieldUnchanged('uid');
+      allow delete: if false;
+    }
+    match /activities/{activityId} {
+      allow read: if isAuthenticated() && (isActivityOwner() || isPublicActivity());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid && isValidActivityData(request.resource.data);
+      allow update: if isActivityOwner() && isValidActivityData(request.resource.data) && fieldUnchanged('userId') && fieldUnchanged('createdAt') && fieldUnchanged('startedAt');
+      allow delete: if isActivityOwner();
+    }
+    match /users/{uid}/following/{targetUid} {
+      allow read: if isAuthenticated();
+      allow create, delete: if isAuthenticated() && isOwner(uid);
+      allow update: if false;
+    }
+    match /achievements/{achievementId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
