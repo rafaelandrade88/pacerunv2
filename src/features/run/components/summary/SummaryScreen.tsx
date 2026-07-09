@@ -19,12 +19,14 @@ export function SummaryScreen() {
   const [showDiscardDialog, setShowDiscardDialog] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
 
-  useEffect(() => { if (runStore.status !== 'finished') router.replace('/run') }, [runStore.status, router])
+  // Não redireciona quando o save acabou de resetar o estado (isSuccess):
+  // a tela de sucesso cuida da navegação para o detalhe da atividade.
+  useEffect(() => { if (runStore.status !== 'finished' && !isSuccess) router.replace('/run') }, [runStore.status, isSuccess, router])
 
   useEffect(() => {
     if (isSuccess) {
       setShowSuccess(true)
-      const timer = setTimeout(() => { router.push(savedActivityId ? `/history/${savedActivityId}` : '/dashboard') }, 2000)
+      const timer = setTimeout(() => { runStore.resetRun(); router.push(savedActivityId ? `/history/${savedActivityId}` : '/dashboard') }, 2000)
       return () => clearTimeout(timer)
     }
   }, [isSuccess, savedActivityId, router])
@@ -32,7 +34,9 @@ export function SummaryScreen() {
   async function handleSave(data: SummaryFormData) { await saveActivity({ title: data.title, notes: data.notes }) }
   function handleDiscard() { runStore.resetRun(); router.replace('/dashboard') }
 
-  if (runStore.status !== 'finished') return null
+  // showSuccess vem antes: após salvar, resetRun() zera o status mas a tela
+  // de sucesso ainda precisa aparecer durante os 2s antes da navegação.
+  if (!showSuccess && runStore.status !== 'finished') return null
 
   if (showSuccess) {
     return (

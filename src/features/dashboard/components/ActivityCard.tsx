@@ -7,12 +7,10 @@ import type { Activity } from '@/domain/entities/Activity'
 import { Distance } from '@/domain/value-objects/Distance'
 import { Duration } from '@/domain/value-objects/Duration'
 import { Pace } from '@/domain/value-objects/Pace'
-import { formatDate } from '@/lib/utils'
+import { cn, formatDate } from '@/lib/utils'
+import { ACTIVITY_TYPE_META } from '@/shared/constants/activityTypes'
 
 interface ActivityCardProps { activity?: Activity; loading?: boolean; index?: number }
-
-const ACTIVITY_EMOJI: Record<Activity['type'], string> = { run: '🏃', walk: '🚶', trail: '🏔️', treadmill: '🏋️' }
-const ACTIVITY_LABELS: Record<Activity['type'], string> = { run: 'Corrida', walk: 'Caminhada', trail: 'Trail', treadmill: 'Esteira' }
 
 export function ActivityCard({ activity, loading = false, index = 0 }: ActivityCardProps) {
   if (loading) return (
@@ -25,6 +23,7 @@ export function ActivityCard({ activity, loading = false, index = 0 }: ActivityC
   const distance = Distance.fromMeters(activity.distance)
   const duration = Duration.fromSeconds(activity.duration)
   const pace = Pace.calculate(activity.distance, activity.duration)
+  const { icon: TypeIcon, colorClass, label: typeLabel } = ACTIVITY_TYPE_META[activity.type]
   return (
     <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: index * 0.06 }} className="rounded-2xl border border-border/40 bg-card p-4 hover:border-border/70 transition-colors duration-200">
       <div className="flex items-start justify-between mb-4">
@@ -32,7 +31,9 @@ export function ActivityCard({ activity, loading = false, index = 0 }: ActivityC
           <p className="text-sm font-semibold">{activity.title}</p>
           <div className="flex items-center gap-1.5 mt-1"><Calendar className="h-3 w-3 text-muted-foreground" /><span className="text-xs text-muted-foreground">{formatDate(activity.startedAt)}</span></div>
         </div>
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-muted text-base">{ACTIVITY_EMOJI[activity.type]}</div>
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-muted">
+          <TypeIcon className={cn('h-4 w-4', colorClass)} />
+        </div>
       </div>
       <div className="grid grid-cols-3 gap-2">
         {[{ icon: MapPin, label: 'Dist.', value: distance.format() }, { icon: Clock, label: 'Tempo', value: duration.format() }, { icon: Gauge, label: 'Pace', value: pace.format() }].map(({ icon: Icon, label, value }) => (
@@ -42,7 +43,7 @@ export function ActivityCard({ activity, loading = false, index = 0 }: ActivityC
           </div>
         ))}
       </div>
-      <div className="mt-3"><span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground">{ACTIVITY_LABELS[activity.type]}</span></div>
+      <div className="mt-3"><span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground">{typeLabel}</span></div>
     </motion.div>
   )
 }

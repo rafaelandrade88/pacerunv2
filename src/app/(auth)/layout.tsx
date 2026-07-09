@@ -12,7 +12,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <p className="text-muted-foreground text-sm">Rastreie suas corridas. Supere seus limites.</p>
         </div>
         <div className="grid grid-cols-3 gap-6">
-          {[{ value: '—', label: 'Corredores' }, { value: '—', label: 'km registrados' }, { value: '—', label: 'Atividades' }].map((stat) => (
+          {[
+            { value: 'GPS', label: 'Rastreamento em tempo real' },
+            { value: 'Splits', label: 'Ritmo km a km' },
+            { value: 'Provas', label: 'Registre suas conquistas' },
+          ].map((stat) => (
             <div key={stat.label} className="space-y-1">
               <p className="text-2xl font-bold text-primary">{stat.value}</p>
               <p className="text-xs text-muted-foreground">{stat.label}</p>

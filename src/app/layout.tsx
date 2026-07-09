@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'PaceRun' },
   icons: { icon: '/icons/icon-192x192.png', apple: '/icons/icon-192x192.png' },
+  other: { 'mobile-web-app-capable': 'yes' },
 }
 
 export const viewport: Viewport = {

@@ -6,13 +6,13 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { ActivityType } from '@/domain/entities/Activity'
 import { cn } from '@/lib/utils'
+import { ACTIVITY_TYPE_META, ALL_ACTIVITIES_ICON } from '@/shared/constants/activityTypes'
 
-const TYPE_OPTIONS: { value: ActivityType | 'all'; label: string; emoji: string }[] = [
-  { value: 'all', label: 'Todas', emoji: '🏅' },
-  { value: 'run', label: 'Corrida', emoji: '🏃' },
-  { value: 'walk', label: 'Caminhada', emoji: '🚶' },
-  { value: 'trail', label: 'Trail', emoji: '🏔️' },
-  { value: 'treadmill', label: 'Esteira', emoji: '🏋️' },
+const TYPE_OPTIONS: { value: ActivityType | 'all'; label: string; icon: typeof ALL_ACTIVITIES_ICON }[] = [
+  { value: 'all', label: 'Todas', icon: ALL_ACTIVITIES_ICON },
+  ...(Object.entries(ACTIVITY_TYPE_META) as [ActivityType, (typeof ACTIVITY_TYPE_META)[ActivityType]][]).map(
+    ([value, meta]) => ({ value, label: meta.label, icon: meta.icon })
+  ),
 ]
 
 const PERIOD_OPTIONS = [
@@ -40,7 +40,7 @@ export function ActivityFilters() {
           const isActive = (type ?? 'all') === opt.value
           return (
             <button key={opt.value} onClick={() => handleTypeChange(opt.value)} className={cn('flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200 border', isActive ? 'bg-primary text-primary-foreground border-primary' : 'bg-card text-muted-foreground border-border/40 hover:border-border hover:text-foreground')}>
-              <span>{opt.emoji}</span>{opt.label}
+              <opt.icon className="h-3.5 w-3.5" />{opt.label}
             </button>
           )
         })}

@@ -25,9 +25,15 @@ export function RunMetricsDisplay() {
 
   useEffect(() => {
     if (status !== 'running') { if (rafRef.current) cancelAnimationFrame(rafRef.current); return }
-    function loop() { tick(performance.now()); rafRef.current = requestAnimationFrame(loop) }
+    function loop() { tick(Date.now()); rafRef.current = requestAnimationFrame(loop) }
     rafRef.current = requestAnimationFrame(loop)
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }
+    // rAF não roda com a aba suspensa; ao voltar do background, atualiza o cronômetro na hora
+    function onVisible() { if (document.visibilityState === 'visible') tick(Date.now()) }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
   }, [status, tick])
 
   const distance = Distance.fromMeters(distanceMeters)

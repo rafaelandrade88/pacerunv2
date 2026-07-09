@@ -1,11 +1,13 @@
 'use client'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { RunControls } from '@/features/run/components/RunControls'
 import { RunMetricsDisplay } from '@/features/run/components/RunMetricsDisplay'
 import { SplitsList } from '@/features/run/components/SplitsList'
+import { useWakeLock } from '@/features/run/hooks/useWakeLock'
 import { GpsService } from '@/features/run/services/GpsService'
 import { useRunStore } from '@/features/run/store/runStore'
 
@@ -17,7 +19,16 @@ const LiveMap = dynamic(() => import('@/features/run/components/LiveMap').then((
 const gpsService = new GpsService()
 
 export function RunScreen() {
+  const router = useRouter()
   const { status, route, gpsReady, gpsError, setGpsReady, setGpsError, addGpsPoint } = useRunStore()
+
+  // Corrida finalizada mas ainda não salva (persistida em sessionStorage):
+  // volta ao resumo para salvar/descartar, em vez de mostrar dados residuais aqui.
+  // Reativo ao status (não getState no mount) porque a reidratação do persist
+  // pode acontecer depois do primeiro render num reload completo da página.
+  useEffect(() => {
+    if (status === 'finished') router.replace('/run/summary')
+  }, [status, router])
 
   useEffect(() => {
     gpsService.start({
@@ -32,6 +43,7 @@ export function RunScreen() {
   }, [setGpsReady, setGpsError, addGpsPoint])
 
   const isActive = status === 'running' || status === 'paused'
+  useWakeLock(isActive)
 
   return (
     <div className="space-y-4">

@@ -36,8 +36,15 @@ async function compressToDataURI(file: File): Promise<string> {
 
 export const ProfileService = {
   async updateProfile(uid: string, data: ProfileEditFormData): Promise<UserProfile> {
-    const existing = await userRepository.findByUsername(data.username)
-    if (existing && existing.uid !== uid) throw new Error('Este nome de usuário já está em uso.')
+    // Checagem de unicidade é best-effort: se a query falhar (ex: regras do
+    // Firestore), não bloqueia o save — a validação de formato roda nas rules.
+    try {
+      const existing = await userRepository.findByUsername(data.username)
+      if (existing && existing.uid !== uid) throw new Error('Este nome de usuário já está em uso.')
+    } catch (err) {
+      if ((err as Error).message.includes('já está em uso')) throw err
+      console.warn('Checagem de username indisponível:', err)
+    }
     const currentUser = auth.currentUser
     if (currentUser) await updateFirebaseProfile(currentUser, { displayName: data.displayName })
     return userRepository.update(uid, {

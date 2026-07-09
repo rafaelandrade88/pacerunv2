@@ -16,7 +16,13 @@ export class UserRepository implements IUserRepository {
   }
 
   async findByUsername(username: string): Promise<UserProfile | null> {
-    const q = query(collection(db, this.collection), where('username', '==', username))
+    // As regras do Firestore só permitem listar perfis com isPublic == true;
+    // sem esse filtro a query inteira é rejeitada com "insufficient permissions".
+    const q = query(
+      collection(db, this.collection),
+      where('username', '==', username),
+      where('isPublic', '==', true)
+    )
     const snap = await getDocs(q)
     if (snap.empty) return null
     const first = snap.docs[0]

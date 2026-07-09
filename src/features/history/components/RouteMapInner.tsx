@@ -1,4 +1,6 @@
 'use client'
+import 'leaflet/dist/leaflet.css'
+
 import { useEffect, useRef } from 'react'
 
 import type { GeoPoint } from '@/domain/entities/Activity'
@@ -11,7 +13,9 @@ export function RouteMapInner({ route, className }: RouteMapInnerProps) {
 
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return
+    let disposed = false
     import('leaflet').then((L) => {
+      if (disposed || !mapRef.current) return
       const latLngs = route.map((p) => [p.lat, p.lng] as [number, number])
       const map = L.map(mapRef.current!, { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false })
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
@@ -22,8 +26,9 @@ export function RouteMapInner({ route, className }: RouteMapInnerProps) {
       L.marker(latLngs[latLngs.length - 1], { icon: endIcon }).addTo(map)
       map.fitBounds(polyline.getBounds(), { padding: [24, 24] })
       mapInstance.current = map
+      requestAnimationFrame(() => { if (!disposed) { map.invalidateSize(); map.fitBounds(polyline.getBounds(), { padding: [24, 24] }) } })
     })
-    return () => { if (mapInstance.current) { (mapInstance.current as { remove(): void }).remove(); mapInstance.current = null } }
+    return () => { disposed = true; if (mapInstance.current) { (mapInstance.current as { remove(): void }).remove(); mapInstance.current = null } }
   }, [route])
 
   return <div ref={mapRef} className={className ?? 'h-64 w-full rounded-2xl overflow-hidden'} />

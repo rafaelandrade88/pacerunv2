@@ -1,6 +1,6 @@
 'use client'
 import { motion } from 'framer-motion'
-import { Activity, Bell, Menu, Moon, Sparkles, Sun } from 'lucide-react'
+import { Activity, Menu, Moon, Sparkles, Sun } from 'lucide-react'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
@@ -72,9 +72,6 @@ export function AppHeader() {
             {hasUnread && (
               <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" aria-hidden />
             )}
-          </Button>
-          <Button variant="ghost" size="icon" aria-label="Notificações" className="h-9 w-9 rounded-xl">
-            <Bell className="h-4 w-4" />
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger

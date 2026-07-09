@@ -54,17 +54,20 @@ export const useRunStore = create<RunState & RunActions>()(
       setActivityType: (type) => set({ activityType: type }),
       setGpsReady: (ready) => set((state) => ({ gpsReady: ready, status: ready && state.status === 'idle' ? 'ready' : state.status })),
       setGpsError: (error) => set({ gpsError: error }),
-      startRun: () => set({ status: 'running', startedAt: new Date(), lastResumedAt: performance.now(), accumulatedSeconds: 0 }),
+      // Date.now() (relógio real) em vez de performance.now(): em navegadores móveis,
+      // performance.now() congela enquanto a aba está suspensa (tela bloqueada/app em
+      // segundo plano), fazendo o cronômetro parar. Date.now() continua correto.
+      startRun: () => set({ status: 'running', startedAt: new Date(), lastResumedAt: Date.now(), accumulatedSeconds: 0 }),
       pauseRun: () => {
         const { lastResumedAt, accumulatedSeconds } = get()
-        const elapsed = lastResumedAt ? (performance.now() - lastResumedAt) / 1000 : 0
+        const elapsed = lastResumedAt ? (Date.now() - lastResumedAt) / 1000 : 0
         set({ status: 'paused', accumulatedSeconds: accumulatedSeconds + elapsed, lastResumedAt: null })
       },
-      resumeRun: () => set({ status: 'running', lastResumedAt: performance.now() }),
+      resumeRun: () => set({ status: 'running', lastResumedAt: Date.now() }),
       finishRun: () => {
         const { lastResumedAt, accumulatedSeconds, status } = get()
         let finalSeconds = accumulatedSeconds
-        if (status === 'running' && lastResumedAt) finalSeconds += (performance.now() - lastResumedAt) / 1000
+        if (status === 'running' && lastResumedAt) finalSeconds += (Date.now() - lastResumedAt) / 1000
         set({ status: 'finished', durationSeconds: Math.floor(finalSeconds), lastResumedAt: null })
       },
       resetRun: () => set(INITIAL_STATE),
@@ -80,17 +83,23 @@ export const useRunStore = create<RunState & RunActions>()(
         const newRoute = [...route, point]
         const newPaceHistory = instantPace > 0 ? [...paceHistory, instantPace].slice(-20) : paceHistory
         const smoothedPace = smoothPace(newPaceHistory)
-        const elapsed = lastResumedAt ? accumulatedSeconds + (performance.now() - lastResumedAt) / 1000 : accumulatedSeconds
+        const elapsed = lastResumedAt ? accumulatedSeconds + (Date.now() - lastResumedAt) / 1000 : accumulatedSeconds
         const avgPace = Pace.calculate(newDistanceMeters, elapsed).toSecondsPerKm()
+        // duration de cada split = segundos gastos NAQUELE km (não acumulado).
+        // Quando vários splits fecham num mesmo ponto GPS (ex: retomada após
+        // suspensão), interpola o instante de cada cruzamento pela distância.
+        const deltaSeconds = lastPoint ? Math.max(0, (point.timestamp - lastPoint.timestamp) / 1000) : 0
+        const elapsedBefore = Math.max(0, elapsed - deltaSeconds)
+        let cumulativeSplitSeconds = splits.reduce((sum, s) => sum + s.duration, 0)
         const newSplits = [...splits]
         let newNextSplitAt = nextSplitAtMeters
         while (newDistanceMeters >= newNextSplitAt) {
-          const splitNumber = newSplits.length + 1
-          const totalElapsed = Math.floor(elapsed)
-          const splitStartTime = splits.length > 0 ? splits[splits.length - 1].duration : 0
-          const splitDuration = totalElapsed - splitStartTime
+          const fraction = deltaMeters > 0 ? Math.min(1, Math.max(0, (newNextSplitAt - distanceMeters) / deltaMeters)) : 1
+          const elapsedAtCrossing = elapsedBefore + fraction * deltaSeconds
+          const splitDuration = Math.max(0, Math.round(elapsedAtCrossing - cumulativeSplitSeconds))
           const splitPace = Pace.calculate(1000, splitDuration).toSecondsPerKm()
-          newSplits.push({ kilometer: splitNumber, duration: totalElapsed, pace: splitPace, elevationGain: 0 })
+          newSplits.push({ kilometer: newSplits.length + 1, duration: splitDuration, pace: splitPace, elevationGain: 0 })
+          cumulativeSplitSeconds += splitDuration
           newNextSplitAt += 1000
         }
         set({ route: newRoute, distanceMeters: newDistanceMeters, currentPaceSecondsPerKm: smoothedPace, averagePaceSecondsPerKm: avgPace, currentSpeedMs: instantPace > 0 ? 1000 / instantPace : 0, splits: newSplits, nextSplitAtMeters: newNextSplitAt, paceHistory: newPaceHistory })
@@ -109,6 +118,9 @@ export const useRunStore = create<RunState & RunActions>()(
         status: state.status, activityType: state.activityType, distanceMeters: state.distanceMeters,
         durationSeconds: state.durationSeconds, route: state.route, splits: state.splits,
         startedAt: state.startedAt, accumulatedSeconds: state.accumulatedSeconds, nextSplitAtMeters: state.nextSplitAtMeters,
+        // Persistir lastResumedAt (agora epoch ms via Date.now) permite que o
+        // cronômetro continue correto mesmo após reload da página durante a corrida.
+        lastResumedAt: state.lastResumedAt,
       }),
     }
   )

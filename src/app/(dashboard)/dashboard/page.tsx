@@ -26,7 +26,7 @@ export default function DashboardPage() {
           {getGreeting()}, <span className="text-primary">{user?.displayName?.split(' ')[0] ?? 'corredor'}</span> 👋
         </h2>
         <p className="text-sm text-muted-foreground">
-          {isLoading || !data ? 'Carregando seus dados...' : data.stats.thisWeekActivities === 0 ? 'Pronto para a sua primeira corrida da semana?' : `${data.stats.thisWeekActivities} atividade(s) esta semana. Continue assim!`}
+          {isLoading || !data ? 'Carregando seus dados...' : data.stats.thisWeekActivities === 0 ? 'Pronto para a sua primeira corrida da semana?' : `${data.stats.thisWeekActivities} ${data.stats.thisWeekActivities === 1 ? 'atividade' : 'atividades'} esta semana. Continue assim!`}
         </p>
       </motion.div>
       {isError ? (

@@ -20,7 +20,9 @@ export function useSaveActivity() {
       queryClient.invalidateQueries({ queryKey: ['activities'] })
       queryClient.invalidateQueries({ queryKey: [PROFILE_QUERY_KEY] })
       queryClient.invalidateQueries({ queryKey: ['recent-activities'] })
-      runState.resetRun()
+      // resetRun NÃO acontece aqui: o zustand notifica de forma síncrona antes
+      // de isSuccess virar true, e o SummaryScreen redirecionaria para /run no
+      // meio do fluxo. O reset acontece no SummaryScreen, junto da navegação.
     },
   })
 

@@ -8,11 +8,10 @@ import type { Activity } from '@/domain/entities/Activity'
 import { Distance } from '@/domain/value-objects/Distance'
 import { Duration } from '@/domain/value-objects/Duration'
 import { Pace } from '@/domain/value-objects/Pace'
-import { formatDate } from '@/lib/utils'
+import { cn, formatDate } from '@/lib/utils'
+import { ACTIVITY_TYPE_META } from '@/shared/constants/activityTypes'
 
 interface ActivityListItemProps { activity?: Activity; loading?: boolean; index?: number }
-
-const ACTIVITY_EMOJI: Record<Activity['type'], string> = { run: '🏃', walk: '🚶', trail: '🏔️', treadmill: '🏋️' }
 
 export function ActivityListItem({ activity, loading = false, index = 0 }: ActivityListItemProps) {
   if (loading) return (
@@ -26,10 +25,13 @@ export function ActivityListItem({ activity, loading = false, index = 0 }: Activ
   const distance = Distance.fromMeters(activity.distance)
   const duration = Duration.fromSeconds(activity.duration)
   const pace = Pace.calculate(activity.distance, activity.duration)
+  const { icon: TypeIcon, colorClass } = ACTIVITY_TYPE_META[activity.type]
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: index * 0.04 }}>
       <Link href={`/history/${activity.id}`} className="flex items-center gap-4 rounded-2xl border border-border/40 bg-card p-4 hover:border-border/70 hover:shadow-sm transition-all duration-200 group">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted text-xl shrink-0">{ACTIVITY_EMOJI[activity.type]}</div>
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted shrink-0">
+          <TypeIcon className={cn('h-5 w-5', colorClass)} />
+        </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold truncate">{activity.title}</p>
           <div className="flex items-center gap-1.5 mt-0.5"><Calendar className="h-3 w-3 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">{formatDate(activity.startedAt)}</span></div>
