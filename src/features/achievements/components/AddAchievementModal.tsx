@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ImagePlus, Loader2, X } from 'lucide-react'
@@ -143,7 +143,7 @@ export function AddAchievementModal({ open, onClose }: AddAchievementModalProps)
           >
             <div className="sticky top-0 flex items-center justify-between border-b border-border/40 bg-card px-5 py-4 z-10">
               <h2 className="text-base font-bold">Adicionar conquista</h2>
-              <Button variant="ghost" size="icon" onClick={handleClose} className="h-8 w-8 rounded-lg" aria-label="Fechar">
+              <Button variant="ghost" size="icon" onClick={handleClose} className="h-11 w-11 rounded-lg" aria-label="Fechar">
                 <X className="h-4 w-4" />
               </Button>
             </div>

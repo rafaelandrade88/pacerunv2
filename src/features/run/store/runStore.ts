@@ -24,6 +24,8 @@ export interface RunState {
   accumulatedSeconds: number
   gpsError: string | null
   gpsReady: boolean
+  /** Pausa disparada automaticamente por falta de movimento (semáforo etc). */
+  isAutoPaused: boolean
 }
 
 export interface RunActions {
@@ -31,7 +33,7 @@ export interface RunActions {
   setGpsReady: (ready: boolean) => void
   setGpsError: (error: string | null) => void
   startRun: () => void
-  pauseRun: () => void
+  pauseRun: (auto?: boolean) => void
   resumeRun: () => void
   finishRun: () => void
   resetRun: () => void
@@ -44,7 +46,7 @@ const INITIAL_STATE: RunState = {
   currentPaceSecondsPerKm: 0, averagePaceSecondsPerKm: 0, currentSpeedMs: 0,
   route: [], splits: [], nextSplitAtMeters: 1000, paceHistory: [],
   startedAt: null, lastResumedAt: null, accumulatedSeconds: 0,
-  gpsError: null, gpsReady: false,
+  gpsError: null, gpsReady: false, isAutoPaused: false,
 }
 
 export const useRunStore = create<RunState & RunActions>()(
@@ -58,12 +60,12 @@ export const useRunStore = create<RunState & RunActions>()(
       // performance.now() congela enquanto a aba está suspensa (tela bloqueada/app em
       // segundo plano), fazendo o cronômetro parar. Date.now() continua correto.
       startRun: () => set({ status: 'running', startedAt: new Date(), lastResumedAt: Date.now(), accumulatedSeconds: 0 }),
-      pauseRun: () => {
+      pauseRun: (auto = false) => {
         const { lastResumedAt, accumulatedSeconds } = get()
         const elapsed = lastResumedAt ? (Date.now() - lastResumedAt) / 1000 : 0
-        set({ status: 'paused', accumulatedSeconds: accumulatedSeconds + elapsed, lastResumedAt: null })
+        set({ status: 'paused', accumulatedSeconds: accumulatedSeconds + elapsed, lastResumedAt: null, isAutoPaused: auto })
       },
-      resumeRun: () => set({ status: 'running', lastResumedAt: Date.now() }),
+      resumeRun: () => set({ status: 'running', lastResumedAt: Date.now(), isAutoPaused: false }),
       finishRun: () => {
         const { lastResumedAt, accumulatedSeconds, status } = get()
         let finalSeconds = accumulatedSeconds
@@ -121,6 +123,7 @@ export const useRunStore = create<RunState & RunActions>()(
         // Persistir lastResumedAt (agora epoch ms via Date.now) permite que o
         // cronômetro continue correto mesmo após reload da página durante a corrida.
         lastResumedAt: state.lastResumedAt,
+        isAutoPaused: state.isAutoPaused,
       }),
     }
   )

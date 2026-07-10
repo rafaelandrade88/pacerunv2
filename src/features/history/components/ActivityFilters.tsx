@@ -39,7 +39,7 @@ export function ActivityFilters() {
         {TYPE_OPTIONS.map((opt) => {
           const isActive = (type ?? 'all') === opt.value
           return (
-            <button key={opt.value} onClick={() => handleTypeChange(opt.value)} className={cn('flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200 border', isActive ? 'bg-primary text-primary-foreground border-primary' : 'bg-card text-muted-foreground border-border/40 hover:border-border hover:text-foreground')}>
+            <button key={opt.value} onClick={() => handleTypeChange(opt.value)} className={cn('flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-xs font-medium transition-all duration-200 border', isActive ? 'bg-primary text-primary-foreground border-primary' : 'bg-card text-muted-foreground border-border/40 hover:border-border hover:text-foreground')}>
               <opt.icon className="h-3.5 w-3.5" />{opt.label}
             </button>
           )

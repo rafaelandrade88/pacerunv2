@@ -1,6 +1,6 @@
 export const APP_CONFIG = {
   name: 'PaceRun',
-  version: '2.0.0',
+  version: '2.1.0',
   description: 'Rastreie suas corridas. Supere seus limites.',
   url: process.env.NEXT_PUBLIC_APP_URL ?? 'https://pacerunv2.vercel.app',
 } as const

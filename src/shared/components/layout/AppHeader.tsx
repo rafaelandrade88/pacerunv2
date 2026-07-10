@@ -1,7 +1,7 @@
-'use client'
+﻿'use client'
 import { motion } from 'framer-motion'
-import { Activity, Menu, Moon, Sparkles, Sun } from 'lucide-react'
-import Link from 'next/link'
+import { Menu, Moon, Sparkles, Sun } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 
@@ -19,9 +19,9 @@ function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
-  if (!mounted) return <div className="h-9 w-9" />
+  if (!mounted) return <div className="h-11 w-11" />
   return (
-    <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Alternar tema" className="h-9 w-9 rounded-xl">
+    <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Alternar tema" className="h-11 w-11 rounded-xl">
       <motion.div key={theme} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ duration: 0.2 }}>
         {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
       </motion.div>
@@ -29,8 +29,22 @@ function ThemeToggle() {
   )
 }
 
+// Título da página atual no header desktop (a marca já está na sidebar).
+// Prefixos mais específicos primeiro para sub-rotas resolverem corretamente.
+const PAGE_TITLES: [prefix: string, title: string][] = [
+  ['/profile/edit', 'Editar perfil'],
+  ['/profile', 'Perfil'],
+  ['/run/summary', 'Resumo da corrida'],
+  ['/run', 'Correr'],
+  ['/history', 'Histórico'],
+  ['/conquistas', 'Conquistas'],
+  ['/dashboard', 'Dashboard'],
+]
+
 export function AppHeader() {
   const { user } = useAuth()
+  const pathname = usePathname()
+  const pageTitle = PAGE_TITLES.find(([prefix]) => pathname.startsWith(prefix))?.[1] ?? ''
   const { data: profile } = useProfile()
   const { signOut, loading } = useAuthActions()
   const { hasUnread, isOpen: notesOpen, open: openNotes, close: closeNotes } = useReleaseNotes()
@@ -47,25 +61,20 @@ export function AppHeader() {
             variant="ghost"
             size="icon"
             onClick={() => setDrawerOpen(true)}
-            className="h-9 w-9 rounded-xl"
+            className="h-11 w-11 rounded-xl"
             aria-label="Abrir menu"
           >
             <Menu className="h-5 w-5" />
           </Button>
         </div>
-        <Link href="/dashboard" className="hidden lg:flex items-center gap-2" aria-label="PaceRun home">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-            <Activity className="h-3.5 w-3.5 text-primary-foreground" />
-          </div>
-          <span className="text-sm font-bold tracking-tight">PaceRun</span>
-        </Link>
+        <span className="hidden lg:block text-sm font-semibold text-muted-foreground">{pageTitle}</span>
         <div className="flex items-center gap-1">
           <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"
             onClick={openNotes}
-            className="relative h-9 w-9 rounded-xl"
+            className="relative h-11 w-11 rounded-xl"
             aria-label="Novidades"
           >
             <Sparkles className="h-4 w-4" />
@@ -76,7 +85,7 @@ export function AppHeader() {
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <Button variant="ghost" className="relative h-9 w-9 rounded-xl p-0" aria-label="Menu do usuário">
+                <Button variant="ghost" className="relative h-11 w-11 rounded-xl p-0" aria-label="Menu do usuário">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={photoURL} alt={user?.displayName ?? 'Usuário'} />
                     <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">{initials}</AvatarFallback>

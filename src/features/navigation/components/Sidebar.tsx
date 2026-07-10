@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Activity } from 'lucide-react'
 import Link from 'next/link'
 
+import { APP_CONFIG } from '@/constants/app'
 import { NavItem } from '@/features/navigation/components/NavItem'
 import { NAV_ITEMS } from '@/features/navigation/constants/navItems'
 
@@ -21,7 +22,7 @@ export function Sidebar() {
         {NAV_ITEMS.map((item) => <NavItem key={item.href} item={item} variant="sidebar" />)}
       </nav>
       <div className="border-t border-border/40 pt-4">
-        <p className="text-[10px] text-muted-foreground text-center">PaceRun v2.0.0</p>
+        <p className="text-[10px] text-muted-foreground text-center">PaceRun v{APP_CONFIG.version}</p>
       </div>
     </motion.aside>
   )

@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { AuthProvider } from '@/providers/AuthProvider'
+import { MotionProvider } from '@/providers/MotionProvider'
 import { QueryProvider } from '@/providers/QueryProvider'
 import { ThemeProvider } from '@/providers/ThemeProvider'
 import './globals.css'
@@ -37,7 +38,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <NuqsAdapter>
           <ThemeProvider>
             <QueryProvider>
-              <AuthProvider>{children}</AuthProvider>
+              <MotionProvider>
+                <AuthProvider>{children}</AuthProvider>
+              </MotionProvider>
             </QueryProvider>
           </ThemeProvider>
         </NuqsAdapter>

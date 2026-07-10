@@ -47,11 +47,14 @@ export const ProfileService = {
     }
     const currentUser = auth.currentUser
     if (currentUser) await updateFirebaseProfile(currentUser, { displayName: data.displayName })
+    const goalText = data.weeklyGoalKm?.replace(',', '.').trim()
+    const weeklyGoalKm = goalText ? parseFloat(goalText) : null
     return userRepository.update(uid, {
       displayName: data.displayName,
       username: data.username,
       bio: data.bio,
       isPublic: data.isPublic,
+      weeklyGoalKm,
     })
   },
 

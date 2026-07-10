@@ -20,12 +20,21 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   const router = useRouter()
   const { updateProfile } = useProfileMutations()
 
+  const defaults = {
+    displayName: profile.displayName ?? '',
+    username: profile.username,
+    bio: profile.bio ?? '',
+    isPublic: profile.isPublic,
+    weeklyGoalKm: profile.weeklyGoalKm ? String(profile.weeklyGoalKm) : '',
+  }
+
   const form = useForm<ProfileEditFormData>({
     resolver: zodResolver(profileEditSchema),
-    defaultValues: { displayName: profile.displayName ?? '', username: profile.username, bio: profile.bio ?? '', isPublic: profile.isPublic },
+    defaultValues: defaults,
   })
 
-  useEffect(() => { form.reset({ displayName: profile.displayName ?? '', username: profile.username, bio: profile.bio ?? '', isPublic: profile.isPublic }) }, [profile, form])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { form.reset(defaults) }, [profile, form])
 
   async function onSubmit(data: ProfileEditFormData) {
     try { await updateProfile.mutateAsync(data); router.push('/profile'); router.refresh() }
@@ -43,6 +52,14 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
         )} />
         <FormField control={form.control} name="bio" render={({ field }) => (
           <FormItem><FormLabel>Bio</FormLabel><FormControl><Textarea {...field} placeholder="Conte um pouco sobre você e suas corridas..." rows={3} className="resize-none" disabled={updateProfile.isPending} /></FormControl><FormMessage /></FormItem>
+        )} />
+        <FormField control={form.control} name="weeklyGoalKm" render={({ field }) => (
+          <FormItem>
+            <FormLabel>Meta semanal (km)</FormLabel>
+            <FormControl><Input {...field} type="number" inputMode="decimal" min={1} max={300} placeholder="Ex: 20" disabled={updateProfile.isPending} /></FormControl>
+            <FormDescription className="text-xs text-muted-foreground">Deixe vazio para não ter meta. O dashboard mostra seu progresso da semana.</FormDescription>
+            <FormMessage />
+          </FormItem>
         )} />
         <FormField control={form.control} name="isPublic" render={({ field }) => (
           <FormItem>

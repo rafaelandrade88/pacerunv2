@@ -16,10 +16,13 @@ export const ActivitySaveService = {
     const activityId = activityRef.id
     const activityTitle = title?.trim() || generateActivityTitle(runState.activityType)
     const now = new Date()
+    // runState vem do zustand persist: após reload, startedAt é string JSON,
+    // e o Firestore gravaria string em vez de Timestamp (quebrando queries por data).
+    const startedAt = runState.startedAt ? new Date(runState.startedAt) : now
 
     const activityData = {
       userId, type: runState.activityType, status: 'completed' as const,
-      title: activityTitle, startedAt: runState.startedAt ?? now, finishedAt: now,
+      title: activityTitle, startedAt, finishedAt: now,
       duration: runState.durationSeconds, distance: runState.distanceMeters,
       pace: runState.averagePaceSecondsPerKm, route: runState.route, splits: runState.splits,
       isPublic: true, ...(notes?.trim() ? { notes: notes.trim() } : {}),
@@ -37,7 +40,7 @@ export const ActivitySaveService = {
     })
     await batch.commit()
 
-    const activity: Activity = { id: activityId, ...activityData, startedAt: runState.startedAt ?? now, finishedAt: now, createdAt: now, updatedAt: now }
+    const activity: Activity = { id: activityId, ...activityData, startedAt, finishedAt: now, createdAt: now, updatedAt: now }
     return { activityId, activity }
   },
 }

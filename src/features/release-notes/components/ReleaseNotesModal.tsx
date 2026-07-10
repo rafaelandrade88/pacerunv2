@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Sparkles, X } from 'lucide-react'
 import { useEffect } from 'react'
@@ -48,7 +48,7 @@ export function ReleaseNotesModal({ open, onClose }: ReleaseNotesModalProps) {
                 <Sparkles className="h-5 w-5 text-primary" />
                 <h2 className="text-base font-bold">Novidades</h2>
               </div>
-              <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 rounded-lg" aria-label="Fechar">
+              <Button variant="ghost" size="icon" onClick={onClose} className="h-11 w-11 rounded-lg" aria-label="Fechar">
                 <X className="h-4 w-4" />
               </Button>
             </div>

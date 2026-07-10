@@ -45,7 +45,7 @@ export function ShareActivityButton({ activity }: ShareActivityButtonProps) {
       size="icon"
       onClick={handleShare}
       disabled={sharing}
-      className="h-9 w-9 rounded-xl text-muted-foreground hover:text-primary shrink-0"
+      className="h-11 w-11 rounded-xl text-muted-foreground hover:text-primary shrink-0"
       aria-label="Compartilhar atividade"
     >
       {sharing ? <Loader2 className="h-4 w-4 animate-spin" /> : done ? <Check className="h-4 w-4 text-primary" /> : <Share2 className="h-4 w-4" />}

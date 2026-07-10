@@ -57,6 +57,7 @@ export class UserRepository implements IUserRepository {
       following: (data.following as number) ?? 0,
       followers: (data.followers as number) ?? 0,
       isPublic: (data.isPublic as boolean) ?? true,
+      weeklyGoalKm: (data.weeklyGoalKm as number | null | undefined) ?? null,
       createdAt: (data.createdAt as { toDate(): Date })?.toDate?.() ?? new Date(),
       updatedAt: (data.updatedAt as { toDate(): Date })?.toDate?.() ?? new Date(),
     }

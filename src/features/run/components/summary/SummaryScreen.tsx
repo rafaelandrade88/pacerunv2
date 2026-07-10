@@ -1,9 +1,10 @@
 'use client'
 import { motion } from 'framer-motion'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Trophy } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
+import { getBrokenRecords, usePersonalRecords } from '@/features/profile/hooks/usePersonalRecords'
 import { SplitsList } from '@/features/run/components/SplitsList'
 import { DiscardDialog } from '@/features/run/components/summary/DiscardDialog'
 import { SummaryForm } from '@/features/run/components/summary/SummaryForm'
@@ -18,6 +19,8 @@ export function SummaryScreen() {
   const { saveActivity, isSaving, saveError, isSuccess, savedActivityId } = useSaveActivity()
   const [showDiscardDialog, setShowDiscardDialog] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [brokenRecords, setBrokenRecords] = useState<string[]>([])
+  const { data: previousRecords } = usePersonalRecords()
 
   // Não redireciona quando o save acabou de resetar o estado (isSuccess):
   // a tela de sucesso cuida da navegação para o detalhe da atividade.
@@ -26,12 +29,25 @@ export function SummaryScreen() {
   useEffect(() => {
     if (isSuccess) {
       setShowSuccess(true)
-      const timer = setTimeout(() => { runStore.resetRun(); router.push(savedActivityId ? `/history/${savedActivityId}` : '/dashboard') }, 2000)
+      // Mais tempo na tela quando há recorde para ler a celebração
+      const delay = brokenRecords.length > 0 ? 3500 : 2000
+      const timer = setTimeout(() => { runStore.resetRun(); router.push(savedActivityId ? `/history/${savedActivityId}` : '/dashboard') }, delay)
       return () => clearTimeout(timer)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess, savedActivityId, router])
 
-  async function handleSave(data: SummaryFormData) { await saveActivity({ title: data.title, notes: data.notes }) }
+  async function handleSave(data: SummaryFormData) {
+    // Compara com os recordes ANTES de salvar (o save invalida o cache)
+    if (previousRecords) {
+      setBrokenRecords(getBrokenRecords(previousRecords, {
+        distanceMeters: runStore.distanceMeters,
+        durationSeconds: runStore.durationSeconds,
+        paceSecondsPerKm: runStore.averagePaceSecondsPerKm,
+      }))
+    }
+    await saveActivity({ title: data.title, notes: data.notes })
+  }
   function handleDiscard() { runStore.resetRun(); router.replace('/dashboard') }
 
   // showSuccess vem antes: após salvar, resetRun() zera o status mas a tela
@@ -48,6 +64,19 @@ export function SummaryScreen() {
           <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-2xl font-bold">Corrida salva!</motion.p>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-sm text-muted-foreground">Abrindo detalhes da atividade...</motion.p>
         </div>
+        {brokenRecords.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Novos recordes pessoais</p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {brokenRecords.map((label) => (
+                <span key={label} className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
+                  <Trophy className="h-3.5 w-3.5" />
+                  {label}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </motion.div>
     )
   }

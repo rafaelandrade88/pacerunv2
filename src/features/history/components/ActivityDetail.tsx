@@ -53,7 +53,7 @@ export function ActivityDetail({ activity }: ActivityDetailProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9 rounded-xl shrink-0"
+          className="h-11 w-11 rounded-xl shrink-0"
           nativeButton={false}
           render={<Link href="/history"><ArrowLeft className="h-4 w-4" /></Link>}
         />
@@ -62,7 +62,7 @@ export function ActivityDetail({ activity }: ActivityDetailProps) {
           <div className="flex items-center gap-1.5 mt-0.5"><Calendar className="h-3 w-3 text-muted-foreground" /><span className="text-xs text-muted-foreground">{formatDate(activity.startedAt)}</span><span className="text-muted-foreground text-xs mx-1">·</span><span className="text-xs text-muted-foreground">{ACTIVITY_LABELS[activity.type]}</span></div>
         </div>
         <ShareActivityButton activity={activity} />
-        <Button variant="ghost" size="icon" onClick={() => setShowDeleteDialog(true)} className="h-9 w-9 rounded-xl text-muted-foreground hover:text-destructive shrink-0" aria-label="Excluir atividade"><Trash2 className="h-4 w-4" /></Button>
+        <Button variant="ghost" size="icon" onClick={() => setShowDeleteDialog(true)} className="h-11 w-11 rounded-xl text-muted-foreground hover:text-destructive shrink-0" aria-label="Excluir atividade"><Trash2 className="h-4 w-4" /></Button>
       </div>
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-2 gap-3">
         {metrics.map(({ icon: Icon, label, value }, i) => (

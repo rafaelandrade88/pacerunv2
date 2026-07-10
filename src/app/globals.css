@@ -147,7 +147,8 @@
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
     --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
+    /* 0.75 (era 0.708): garante contraste AA para textos pequenos uppercase sobre cards escuros */
+    --muted-foreground: oklch(0.75 0 0);
     --accent: oklch(0.28 0.04 152);
     --accent-foreground: oklch(0.85 0.15 151);
     --destructive: oklch(0.704 0.191 22.216);
@@ -181,5 +182,19 @@
   }
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2;
+  }
+  /* Respeita a preferência do sistema por menos movimento:
+     desativa transições/animações CSS (Framer Motion é tratado via MotionConfig) */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    html {
+      scroll-behavior: auto;
+    }
   }
 }

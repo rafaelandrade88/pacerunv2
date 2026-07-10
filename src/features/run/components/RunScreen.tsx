@@ -18,9 +18,14 @@ const LiveMap = dynamic(() => import('@/features/run/components/LiveMap').then((
 
 const gpsService = new GpsService()
 
+// Sem ponto GPS válido por este tempo durante a corrida = parado (semáforo,
+// descanso). Pontos a menos de 5m são descartados pelo filtro, então "sem
+// pontos" é um bom sinal de imobilidade.
+const AUTO_PAUSE_AFTER_MS = 20_000
+
 export function RunScreen() {
   const router = useRouter()
-  const { status, route, gpsReady, gpsError, setGpsReady, setGpsError, addGpsPoint } = useRunStore()
+  const { status, route, gpsReady, gpsError, isAutoPaused, setGpsReady, setGpsError, addGpsPoint, pauseRun, resumeRun } = useRunStore()
 
   // Corrida finalizada mas ainda não salva (persistida em sessionStorage):
   // volta ao resumo para salvar/descartar, em vez de mostrar dados residuais aqui.
@@ -30,9 +35,27 @@ export function RunScreen() {
     if (status === 'finished') router.replace('/run/summary')
   }, [status, router])
 
+  // Auto-pause: sem movimento por AUTO_PAUSE_AFTER_MS enquanto corre → pausa.
+  // A retomada acontece no onPoint, quando um novo ponto válido chega.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const state = useRunStore.getState()
+      if (state.status !== 'running' || state.route.length === 0) return
+      const lastPoint = state.route[state.route.length - 1]
+      if (Date.now() - lastPoint.timestamp > AUTO_PAUSE_AFTER_MS) pauseRun(true)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [pauseRun])
+
   useEffect(() => {
     gpsService.start({
-      onPoint: (point) => { setGpsReady(true); setGpsError(null); addGpsPoint(point) },
+      onPoint: (point) => {
+        setGpsReady(true)
+        setGpsError(null)
+        const state = useRunStore.getState()
+        if (state.status === 'paused' && state.isAutoPaused) resumeRun()
+        addGpsPoint(point)
+      },
       onError: (error) => {
         setGpsReady(false)
         const messages: Record<number, string> = { 1: 'Permissão de localização negada.', 2: 'Sinal GPS indisponível.', 3: 'Tempo limite de GPS excedido.' }
@@ -40,7 +63,7 @@ export function RunScreen() {
       },
     })
     return () => { gpsService.stop() }
-  }, [setGpsReady, setGpsError, addGpsPoint])
+  }, [setGpsReady, setGpsError, addGpsPoint, resumeRun])
 
   const isActive = status === 'running' || status === 'paused'
   useWakeLock(isActive)
@@ -62,6 +85,12 @@ export function RunScreen() {
       {gpsError && (
         <div className="rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3">
           <p className="text-xs text-destructive">{gpsError}</p>
+        </div>
+      )}
+      {isAutoPaused && (
+        <div className="flex items-center gap-2 rounded-xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3" role="status">
+          <div className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
+          <span className="text-xs font-medium text-yellow-600 dark:text-yellow-400">Pausa automática — retomamos quando você voltar a se mover</span>
         </div>
       )}
       <LiveMap route={route} />

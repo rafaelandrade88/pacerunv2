@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { APP_CONFIG } from '@/constants/app'
 import { NavItem } from '@/features/navigation/components/NavItem'
 import { NAV_ITEMS } from '@/features/navigation/constants/navItems'
 import { cn } from '@/lib/utils'
@@ -53,7 +54,7 @@ export function MobileDrawer({ open, onClose }: MobileDrawerProps) {
             </div>
             <span className="text-lg font-bold tracking-tight">PaceRun</span>
           </Link>
-          <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 rounded-lg" aria-label="Fechar menu" tabIndex={open ? 0 : -1}>
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-11 w-11 rounded-lg" aria-label="Fechar menu" tabIndex={open ? 0 : -1}>
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -63,7 +64,7 @@ export function MobileDrawer({ open, onClose }: MobileDrawerProps) {
           ))}
         </nav>
         <div className="border-t border-border/40 pt-4">
-          <p className="text-center text-[10px] text-muted-foreground">PaceRun v2.0.0</p>
+          <p className="text-center text-[10px] text-muted-foreground">PaceRun v{APP_CONFIG.version}</p>
         </div>
       </aside>
     </>

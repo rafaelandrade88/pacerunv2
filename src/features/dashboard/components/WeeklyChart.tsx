@@ -28,7 +28,7 @@ export function WeeklyChart({ data, loading = false }: WeeklyChartProps) {
             {/* Tokens são cores oklch completas (Tailwind v4) — hsl(var(...)) gera cor inválida */}
             <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="var(--border)" opacity={0.4} />
             <XAxis dataKey="day" tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v} km`} width={44} />
+            <YAxis tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}km`} width={48} />
             <Tooltip cursor={{ fill: 'var(--accent)', opacity: 0.4 }} formatter={(value) => [`${Number(value).toFixed(2)} km`, 'Distância']} contentStyle={{ background: 'var(--popover)', color: 'var(--popover-foreground)', border: '1px solid var(--border)', borderRadius: '12px', fontSize: '12px' }} />
             <Bar dataKey="km" fill="var(--primary)" radius={[6, 6, 0, 0]} opacity={0.9} />
           </BarChart>

@@ -16,4 +16,6 @@ export interface UserProfile extends User {
   following: number
   followers: number
   isPublic: boolean
+  /** Meta semanal em km definida pelo usuário; null = sem meta. */
+  weeklyGoalKm?: number | null
 }

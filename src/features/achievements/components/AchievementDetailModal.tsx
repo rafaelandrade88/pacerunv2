@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Calendar, ImagePlus, Loader2, MapPin, Pencil, Timer, Trash2, X } from 'lucide-react'
@@ -166,11 +166,11 @@ export function AchievementDetailModal({ achievement, onClose }: AchievementDeta
               <h2 className="text-base font-bold">{mode === 'edit' ? 'Editar conquista' : 'Detalhes'}</h2>
               <div className="flex items-center gap-1">
                 {mode === 'view' && (
-                  <Button variant="ghost" size="icon" onClick={() => setMode('edit')} className="h-8 w-8 rounded-lg" aria-label="Editar">
+                  <Button variant="ghost" size="icon" onClick={() => setMode('edit')} className="h-11 w-11 rounded-lg" aria-label="Editar">
                     <Pencil className="h-4 w-4" />
                   </Button>
                 )}
-                <Button variant="ghost" size="icon" onClick={handleClose} className="h-8 w-8 rounded-lg" aria-label="Fechar">
+                <Button variant="ghost" size="icon" onClick={handleClose} className="h-11 w-11 rounded-lg" aria-label="Fechar">
                   <X className="h-4 w-4" />
                 </Button>
               </div>

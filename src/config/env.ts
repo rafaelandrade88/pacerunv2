@@ -10,7 +10,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: z.string().optional(),
   NEXT_PUBLIC_APP_URL: z.string().url('URL da aplicação inválida'),
   NEXT_PUBLIC_APP_NAME: z.string().default('PaceRun'),
-  NEXT_PUBLIC_APP_VERSION: z.string().default('2.0.0'),
+  NEXT_PUBLIC_APP_VERSION: z.string().default('2.1.0'),
   NEXT_PUBLIC_USE_FIREBASE_EMULATOR: z.string().optional().transform((v) => v === 'true'),
   NEXT_PUBLIC_ENABLE_ANALYTICS: z.string().optional().transform((v) => v === 'true'),
   NEXT_PUBLIC_ENABLE_AVATAR_UPLOAD: z.string().optional().transform((v) => v === 'true'),
