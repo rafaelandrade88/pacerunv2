@@ -1,7 +1,7 @@
 'use client'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { RunControls } from '@/features/run/components/RunControls'
@@ -37,14 +37,33 @@ export function RunScreen() {
 
   // Auto-pause: sem movimento por AUTO_PAUSE_AFTER_MS enquanto corre → pausa.
   // A retomada acontece no onPoint, quando um novo ponto válido chega.
+  //
+  // CRÍTICO: auto-pause só vale para "parado com o app visível" (semáforo).
+  // Quando o sistema suspende o app (tela bloqueada), o corredor continua
+  // correndo — pausar aqui excluiria esse tempo do cronômetro. Detectamos
+  // suspensão de duas formas: página não-visível, e "congelamento" (o
+  // intervalo de 5s que demora >15s para disparar). Após acordar, damos
+  // 30s de carência para o GPS se restabelecer antes de considerar pausa.
+  const lastIntervalRef = useRef(Date.now())
+  const lastWakeRef = useRef(0)
   useEffect(() => {
+    function onVisibility() {
+      if (document.visibilityState === 'visible') lastWakeRef.current = Date.now()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
     const interval = setInterval(() => {
+      const now = Date.now()
+      const wasFrozen = now - lastIntervalRef.current > 15_000
+      lastIntervalRef.current = now
+      if (wasFrozen) { lastWakeRef.current = now; return }
+      if (document.visibilityState !== 'visible') return
+      if (now - lastWakeRef.current < 30_000) return
       const state = useRunStore.getState()
       if (state.status !== 'running' || state.route.length === 0) return
       const lastPoint = state.route[state.route.length - 1]
-      if (Date.now() - lastPoint.timestamp > AUTO_PAUSE_AFTER_MS) pauseRun(true)
+      if (now - lastPoint.timestamp > AUTO_PAUSE_AFTER_MS) pauseRun(true)
     }, 5000)
-    return () => clearInterval(interval)
+    return () => { clearInterval(interval); document.removeEventListener('visibilitychange', onVisibility) }
   }, [pauseRun])
 
   useEffect(() => {
@@ -66,7 +85,8 @@ export function RunScreen() {
   }, [setGpsReady, setGpsError, addGpsPoint, resumeRun])
 
   const isActive = status === 'running' || status === 'paused'
-  useWakeLock(isActive)
+  const wakeLockStatus = useWakeLock(isActive)
+  const wakeLockFailed = isActive && (wakeLockStatus === 'denied' || wakeLockStatus === 'unavailable')
 
   return (
     <div className="space-y-4">
@@ -85,6 +105,14 @@ export function RunScreen() {
       {gpsError && (
         <div className="rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3">
           <p className="text-xs text-destructive">{gpsError}</p>
+        </div>
+      )}
+      {wakeLockFailed && (
+        <div className="rounded-xl border border-orange-500/20 bg-orange-500/10 px-4 py-3" role="alert">
+          <p className="text-xs font-medium text-orange-600 dark:text-orange-400">
+            Não foi possível manter a tela ligada — o tempo é recuperado se a tela bloquear, mas a distância do trecho se perde.
+            {wakeLockStatus === 'denied' ? ' Desative o Modo de Baixa Energia e toque na tela de vez em quando.' : ' Mantenha a tela ativa durante a corrida.'}
+          </p>
         </div>
       )}
       {isAutoPaused && (
