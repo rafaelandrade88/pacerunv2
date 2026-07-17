@@ -37,7 +37,7 @@ export function RecentActivities({ activities, loading = false }: RecentActiviti
       {loading ? (
         <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <ActivityCard key={i} loading />)}</div>
       ) : !activities || activities.length === 0 ? <EmptyState /> : (
-        <div className="space-y-3">{activities.map((activity, index) => <ActivityCard key={activity.id} activity={activity} index={index} />)}</div>
+        <div className="space-y-3">{activities.map((activity) => <ActivityCard key={activity.id} activity={activity} />)}</div>
       )}
     </div>
   )

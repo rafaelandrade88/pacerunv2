@@ -12,7 +12,6 @@ interface StatsCardItemProps {
   sub?: string
   loading?: boolean
   accent?: boolean
-  index?: number
   /** 0–1: substitui o ícone por um anel de progresso (meta semanal). */
   progress?: number
 }
@@ -40,14 +39,14 @@ function ProgressRing({ progress }: { progress: number }) {
   )
 }
 
-export function StatsCardItem({ icon: Icon, label, value, sub, loading = false, accent = false, index = 0, progress }: StatsCardItemProps) {
+export function StatsCardItem({ icon: Icon, label, value, sub, loading = false, accent = false, progress }: StatsCardItemProps) {
   if (loading) return (
     <div className="rounded-2xl border border-border/40 bg-card p-5 space-y-3">
       <Skeleton className="h-4 w-4 rounded-md" /><Skeleton className="h-7 w-24" /><Skeleton className="h-3 w-16" />
     </div>
   )
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: index * 0.07 }}
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}
       className={cn('rounded-2xl border p-5 space-y-3', accent ? 'border-primary/20 bg-primary/5' : 'border-border/40 bg-card hover:border-border/70')}>
       {typeof progress === 'number' ? (
         <ProgressRing progress={progress} />

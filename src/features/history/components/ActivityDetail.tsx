@@ -58,18 +58,18 @@ export function ActivityDetail({ activity }: ActivityDetailProps) {
           render={<Link href="/history"><ArrowLeft className="h-4 w-4" /></Link>}
         />
         <div className="flex-1 min-w-0">
-          <h2 className="text-xl font-bold truncate">{activity.title}</h2>
+          <h1 className="text-xl font-bold truncate">{activity.title}</h1>
           <div className="flex items-center gap-1.5 mt-0.5"><Calendar className="h-3 w-3 text-muted-foreground" /><span className="text-xs text-muted-foreground">{formatDate(activity.startedAt)}</span><span className="text-muted-foreground text-xs mx-1">·</span><span className="text-xs text-muted-foreground">{ACTIVITY_LABELS[activity.type]}</span></div>
         </div>
         <ShareActivityButton activity={activity} />
         <Button variant="ghost" size="icon" onClick={() => setShowDeleteDialog(true)} className="h-11 w-11 rounded-xl text-muted-foreground hover:text-destructive shrink-0" aria-label="Excluir atividade"><Trash2 className="h-4 w-4" /></Button>
       </div>
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-2 gap-3">
-        {metrics.map(({ icon: Icon, label, value }, i) => (
-          <motion.div key={label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }} className="rounded-2xl border border-border/40 bg-card p-4 space-y-2">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="grid grid-cols-2 gap-3">
+        {metrics.map(({ icon: Icon, label, value }) => (
+          <div key={label} className="rounded-2xl border border-border/40 bg-card p-4 space-y-2">
             <div className="flex items-center gap-1.5"><Icon className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{label}</span></div>
             <p className="text-2xl font-bold tabular-nums">{value}</p>
-          </motion.div>
+          </div>
         ))}
       </motion.div>
       {activity.route.length > 1 && (

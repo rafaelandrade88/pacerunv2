@@ -198,3 +198,14 @@
     }
   }
 }
+
+/* Controles de zoom do Leaflet: 44px em telas de toque (WCAG 2.5.8).
+   Fora de @layer para vencer o leaflet.css (que também é unlayered). */
+@media (pointer: coarse) {
+  .leaflet-bar a,
+  .leaflet-touch .leaflet-bar a {
+    width: 44px !important;
+    height: 44px !important;
+    line-height: 44px !important;
+  }
+}

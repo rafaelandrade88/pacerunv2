@@ -19,8 +19,8 @@ export function ProfileStats({ profile, loading = false }: ProfileStatsProps) {
   ]
   return (
     <div className="grid grid-cols-3 gap-3">
-      {stats.map(({ icon: Icon, label, value }, i) => (
-        <motion.div key={label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }} className="rounded-2xl border border-border/40 bg-card p-4 flex flex-col items-center gap-1.5 text-center">
+      {stats.map(({ icon: Icon, label, value }) => (
+        <motion.div key={label} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="rounded-2xl border border-border/40 bg-card p-4 flex flex-col items-center gap-1.5 text-center">
           <Icon className="h-4 w-4 text-muted-foreground" />
           <p className="text-xl font-bold tabular-nums">{value}</p>
           <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{label}</p>

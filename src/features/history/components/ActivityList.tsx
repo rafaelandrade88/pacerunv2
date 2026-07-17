@@ -48,7 +48,7 @@ export function ActivityList({ typeFilter }: ActivityListProps) {
     <div className="space-y-3">
       {isLoading ? Array.from({ length: 6 }).map((_, i) => <ActivityListItem key={i} loading />) : (
         <>
-          {activities.map((activity, index) => <ActivityListItem key={activity.id} activity={activity} index={index} />)}
+          {activities.map((activity) => <ActivityListItem key={activity.id} activity={activity} />)}
           <div ref={sentinelRef} className="h-4 flex items-center justify-center">
             {isFetchingNextPage && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
           </div>

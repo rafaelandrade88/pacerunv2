@@ -57,11 +57,10 @@ export default function ConquistasPage() {
         ) : (
           <>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {achievements.map((achievement, i) => (
+              {achievements.map((achievement) => (
                 <AchievementCard
                   key={achievement.id}
                   achievement={achievement}
-                  index={i}
                   onClick={setSelected}
                 />
               ))}

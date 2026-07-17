@@ -84,7 +84,7 @@ export function SummaryScreen() {
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-1 py-4">
-        <h2 className="text-2xl font-bold">Corrida concluída!</h2>
+        <h1 className="text-2xl font-bold">Corrida concluída!</h1>
         <p className="text-sm text-muted-foreground">Revise os dados e salve sua atividade</p>
       </motion.div>
       <SummaryMetrics runState={runStore} />

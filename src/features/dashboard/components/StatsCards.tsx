@@ -21,7 +21,7 @@ export function StatsCards({ stats, loading = false }: StatsCardsProps) {
   ]
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      {cards.map((card, index) => <StatsCardItem key={card.label} {...card} loading={loading} index={index} />)}
+      {cards.map((card) => <StatsCardItem key={card.label} {...card} loading={loading} />)}
     </div>
   )
 }

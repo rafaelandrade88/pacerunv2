@@ -31,5 +31,5 @@ export function RouteMapInner({ route, className }: RouteMapInnerProps) {
     return () => { disposed = true; if (mapInstance.current) { (mapInstance.current as { remove(): void }).remove(); mapInstance.current = null } }
   }, [route])
 
-  return <div ref={mapRef} className={className ?? 'h-64 w-full rounded-2xl overflow-hidden'} />
+  return <div ref={mapRef} role="img" aria-label="Mapa da rota percorrida" className={className ?? 'h-64 w-full rounded-2xl overflow-hidden'} />
 }

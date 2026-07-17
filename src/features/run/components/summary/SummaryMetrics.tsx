@@ -10,13 +10,13 @@ import { cn } from '@/lib/utils'
 
 interface SummaryMetricsProps { runState: RunState }
 
-function MetricCard({ icon: Icon, label, value, sub, accent, index }: { icon: React.ElementType; label: string; value: string; sub?: string; accent?: boolean; index: number }) {
+function MetricCard({ icon: Icon, label, value, sub, accent }: { icon: React.ElementType; label: string; value: string; sub?: string; accent?: boolean }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: index * 0.07 }} className={cn('rounded-2xl border p-4 space-y-2', accent ? 'border-primary/20 bg-primary/5' : 'border-border/40 bg-card')}>
+    <div className={cn('rounded-2xl border p-4 space-y-2', accent ? 'border-primary/20 bg-primary/5' : 'border-border/40 bg-card')}>
       <div className="flex items-center gap-1.5"><Icon className={cn('h-3.5 w-3.5', accent ? 'text-primary' : 'text-muted-foreground')} /><span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{label}</span></div>
       <p className={cn('text-2xl font-bold tabular-nums', accent ? 'text-primary' : 'text-foreground')}>{value}</p>
       {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
-    </motion.div>
+    </div>
   )
 }
 
@@ -31,8 +31,8 @@ export function SummaryMetrics({ runState }: SummaryMetricsProps) {
     { icon: TrendingUp, label: 'Splits', value: String(runState.splits.length), sub: `${runState.splits.length} km completo(s)` },
   ]
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {metrics.map((m, i) => <MetricCard key={m.label} {...m} index={i} />)}
-    </div>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="grid grid-cols-2 gap-3">
+      {metrics.map((m) => <MetricCard key={m.label} {...m} />)}
+    </motion.div>
   )
 }

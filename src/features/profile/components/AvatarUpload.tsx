@@ -52,7 +52,7 @@ export function AvatarUpload({ photoURL, displayName }: AvatarUploadProps) {
       )}
       {uploadEnabled && (
         <>
-          <button type="button" onClick={() => !isUploading && inputRef.current?.click()} className={cn('absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all hover:bg-primary/90', isUploading && 'opacity-50 cursor-not-allowed')} aria-label="Alterar foto de perfil">
+          <button type="button" onClick={() => !isUploading && inputRef.current?.click()} className={cn('absolute bottom-0 right-0 flex h-8 w-8 pointer-coarse:h-11 pointer-coarse:w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all hover:bg-primary/90', isUploading && 'opacity-50 cursor-not-allowed')} aria-label="Alterar foto de perfil">
             <Camera className="h-3.5 w-3.5" />
           </button>
           <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={handleFileChange} />

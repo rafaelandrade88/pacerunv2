@@ -16,12 +16,11 @@ interface RecordCardProps {
   label: string
   value: string
   activity: Activity
-  index: number
 }
 
-function RecordCard({ icon: Icon, label, value, activity, index }: RecordCardProps) {
+function RecordCard({ icon: Icon, label, value, activity }: RecordCardProps) {
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.07 }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
       <Link
         href={`/history/${activity.id}`}
         className="flex flex-col gap-1.5 rounded-2xl border border-border/40 bg-card p-4 transition-colors hover:border-border/70"
@@ -94,7 +93,7 @@ export function PersonalRecords() {
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-3">
-          {cards.map((card, i) => <RecordCard key={card.label} {...card} index={i} />)}
+          {cards.map((card) => <RecordCard key={card.label} {...card} />)}
         </div>
       )}
     </div>

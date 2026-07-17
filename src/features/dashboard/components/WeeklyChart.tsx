@@ -15,7 +15,7 @@ export function WeeklyChart({ data, loading = false }: WeeklyChartProps) {
   )
   const hasData = data?.some((d) => d.km > 0)
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }} className="rounded-2xl border border-border/40 bg-card p-5 space-y-4">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="rounded-2xl border border-border/40 bg-card p-5 space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Volume semanal</h3>
         <span className="text-xs text-muted-foreground">{data ? `${data.reduce((s, d) => s + d.km, 0).toFixed(2)} km total` : ''}</span>

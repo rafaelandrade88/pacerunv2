@@ -6,19 +6,18 @@ import type { Achievement } from '@/domain/entities/Achievement'
 
 interface AchievementCardProps {
   achievement: Achievement
-  index?: number
   onClick: (achievement: Achievement) => void
 }
 
-export function AchievementCard({ achievement, index = 0, onClick }: AchievementCardProps) {
+export function AchievementCard({ achievement, onClick }: AchievementCardProps) {
   const { eventName, eventDate, location, distance, category, netTime, thumbnailBase64 } = achievement
 
   return (
     <motion.button
       type="button"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.06 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onClick(achievement)}

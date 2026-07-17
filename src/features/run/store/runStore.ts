@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 
 import type { ActivitySplit, ActivityType, GeoPoint } from '@/domain/entities/Activity'
 import { Pace } from '@/domain/value-objects/Pace'
+import { createThrottledSessionStorage } from '@/features/run/store/throttledStorage'
 import { calculateInstantPace, haversineDistance, smoothPace } from '@/features/run/utils/geoUtils'
 
 export type RunStatus = 'idle' | 'ready' | 'running' | 'paused' | 'finished'
@@ -115,7 +116,7 @@ export const useRunStore = create<RunState & RunActions>()(
     }),
     {
       name: 'pacerun-active-run',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => createThrottledSessionStorage()),
       partialize: (state) => ({
         status: state.status, activityType: state.activityType, distanceMeters: state.distanceMeters,
         durationSeconds: state.durationSeconds, route: state.route, splits: state.splits,

@@ -10,9 +10,9 @@ import { Pace } from '@/domain/value-objects/Pace'
 import { cn, formatDate } from '@/lib/utils'
 import { ACTIVITY_TYPE_META } from '@/shared/constants/activityTypes'
 
-interface ActivityCardProps { activity?: Activity; loading?: boolean; index?: number }
+interface ActivityCardProps { activity?: Activity; loading?: boolean }
 
-export function ActivityCard({ activity, loading = false, index = 0 }: ActivityCardProps) {
+export function ActivityCard({ activity, loading = false }: ActivityCardProps) {
   if (loading) return (
     <div className="rounded-2xl border border-border/40 bg-card p-4">
       <div className="flex items-start justify-between mb-3"><div className="space-y-2"><Skeleton className="h-4 w-24" /><Skeleton className="h-3 w-16" /></div><Skeleton className="h-8 w-8 rounded-xl" /></div>
@@ -25,7 +25,7 @@ export function ActivityCard({ activity, loading = false, index = 0 }: ActivityC
   const pace = Pace.calculate(activity.distance, activity.duration)
   const { icon: TypeIcon, colorClass, label: typeLabel } = ACTIVITY_TYPE_META[activity.type]
   return (
-    <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: index * 0.06 }} className="rounded-2xl border border-border/40 bg-card p-4 hover:border-border/70 transition-colors duration-200">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="rounded-2xl border border-border/40 bg-card p-4 hover:border-border/70 transition-colors duration-200">
       <div className="flex items-start justify-between mb-4">
         <div>
           <p className="text-sm font-semibold">{activity.title}</p>

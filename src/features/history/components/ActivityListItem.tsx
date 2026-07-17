@@ -11,9 +11,9 @@ import { Pace } from '@/domain/value-objects/Pace'
 import { cn, formatDate } from '@/lib/utils'
 import { ACTIVITY_TYPE_META } from '@/shared/constants/activityTypes'
 
-interface ActivityListItemProps { activity?: Activity; loading?: boolean; index?: number }
+interface ActivityListItemProps { activity?: Activity; loading?: boolean }
 
-export function ActivityListItem({ activity, loading = false, index = 0 }: ActivityListItemProps) {
+export function ActivityListItem({ activity, loading = false }: ActivityListItemProps) {
   if (loading) return (
     <div className="flex items-center gap-4 rounded-2xl border border-border/40 bg-card p-4">
       <Skeleton className="h-11 w-11 rounded-xl shrink-0" />
@@ -27,7 +27,7 @@ export function ActivityListItem({ activity, loading = false, index = 0 }: Activ
   const pace = Pace.calculate(activity.distance, activity.duration)
   const { icon: TypeIcon, colorClass } = ACTIVITY_TYPE_META[activity.type]
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: index * 0.04 }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
       <Link href={`/history/${activity.id}`} className="flex items-center gap-4 rounded-2xl border border-border/40 bg-card p-4 hover:border-border/70 hover:shadow-sm transition-all duration-200 group">
         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted shrink-0">
           <TypeIcon className={cn('h-5 w-5', colorClass)} />

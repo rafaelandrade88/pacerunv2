@@ -48,7 +48,7 @@ export function MobileDrawer({ open, onClose }: MobileDrawerProps) {
         aria-hidden={!open}
       >
         <div className="mb-8 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2" tabIndex={open ? 0 : -1}>
+          <Link href="/dashboard" className="flex min-h-11 items-center gap-2" tabIndex={open ? 0 : -1}>
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <Activity className="h-4 w-4 text-primary-foreground" />
             </div>

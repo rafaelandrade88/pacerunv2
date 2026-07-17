@@ -28,7 +28,7 @@ export function RecentAchievements() {
           Últimas conquistas
         </h3>
         {recent.length > 0 && (
-          <Link href="/conquistas" className="flex items-center gap-1 text-xs font-medium text-primary hover:underline">
+          <Link href="/conquistas" className="flex min-h-11 items-center gap-1 px-2 -mx-2 -my-3 text-xs font-medium text-primary hover:underline">
             Ver todas <ArrowRight className="h-3 w-3" />
           </Link>
         )}
@@ -41,8 +41,8 @@ export function RecentAchievements() {
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-3">
-          {recent.map((a, i) => (
-            <motion.div key={a.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}>
+          {recent.map((a) => (
+            <motion.div key={a.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
               <Link href="/conquistas" className="flex items-center gap-3 rounded-2xl border border-border/40 bg-card p-4 transition-colors hover:border-border/70">
                 {a.thumbnailBase64 ? (
                   // eslint-disable-next-line @next/next/no-img-element
